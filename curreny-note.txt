@@ -1,0 +1,150 @@
+import java.awt.*;
+import java.awt.event.*;
+
+public class CurrencyConverterAWT extends Frame implements ActionListener {
+    private Choice fromCurrency, toCurrency;
+    private TextField amountField, resultField;
+    private Button convertButton;
+
+    public CurrencyConverterAWT() {
+        // Set up the frame
+        setTitle("Currency Converter");
+        setSize(500, 400);
+        setLayout(null); // Using absolute layout for precise positioning
+        setBackground(new Color(240, 248, 255)); // Light background color
+        setLocationRelativeTo(null);
+
+        Label subtitleLabel = new Label("Customizing conversion between currencies");
+        subtitleLabel.setFont(new Font("Arial", Font.ITALIC, 12)); // Small italic font
+        subtitleLabel.setAlignment(Label.CENTER);
+        subtitleLabel.setBounds(100, 75, 300, 20); // Position just below the title
+        subtitleLabel.setForeground(Color.DARK_GRAY); // Optional: Dark gray text color
+        add(subtitleLabel);
+
+        Label footerLabel = new Label("Made by Joshi");
+        footerLabel.setFont(new Font("Arial", Font.PLAIN, 10)); // Small font size
+        footerLabel.setAlignment(Label.CENTER);
+        footerLabel.setBounds(0, 370, 500, 20); // Position it at the bottom of the window
+        footerLabel.setForeground(Color.GRAY); // Optional: Gray text color
+        add(footerLabel);
+        // Title Label
+        Label titleLabel = new Label("Currency Converter");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setAlignment(Label.CENTER);
+        titleLabel.setBounds(100, 40, 300, 30);
+        titleLabel.setForeground(new Color(0, 102, 204)); // Blue text
+        add(titleLabel);
+        
+        // Components
+        Label fromLabel = new Label("From Currency:");
+        fromLabel.setBounds(50, 100, 120, 30);
+        add(fromLabel);
+
+        fromCurrency = new Choice();
+        fromCurrency.setBounds(200, 100, 150, 30);
+        fromCurrency.add("USD");
+        fromCurrency.add("EUR");
+        fromCurrency.add("INR");
+        fromCurrency.add("GBP");
+        fromCurrency.add("JPY");
+        add(fromCurrency);
+
+        Label toLabel = new Label("To Currency:");
+        toLabel.setBounds(50, 150, 120, 30);
+        add(toLabel);
+
+        toCurrency = new Choice();
+        toCurrency.setBounds(200, 150, 150, 30);
+        toCurrency.add("USD");
+        toCurrency.add("EUR");
+        toCurrency.add("INR");
+        toCurrency.add("GBP");
+        toCurrency.add("JPY");
+        add(toCurrency);
+
+        Label amountLabel = new Label("Amount:");
+        amountLabel.setBounds(50, 200, 120, 30);
+        add(amountLabel);
+
+        amountField = new TextField();
+        amountField.setBounds(200, 200, 150, 30);
+        add(amountField);
+
+        Label resultLabel = new Label("Result:");
+        resultLabel.setBounds(50, 250, 120, 30);
+        add(resultLabel);
+
+        resultField = new TextField();
+        resultField.setBounds(200, 250, 150, 30);
+        resultField.setEditable(false);
+        resultField.setBackground(Color.WHITE); // Read-only field with white background
+        add(resultField);
+
+        convertButton = new Button("Convert");
+        convertButton.setBounds(200, 300, 100, 40);
+        convertButton.setBackground(new Color(0, 153, 76)); // Green button
+        convertButton.setForeground(Color.WHITE); // White text
+        convertButton.setFont(new Font("Arial", Font.BOLD, 14));
+        add(convertButton);
+
+        // Add event listener for the button
+        convertButton.addActionListener(this);
+
+        // Close button handler
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                dispose();
+            }
+        });
+
+        setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            String from = fromCurrency.getSelectedItem();
+            String to = toCurrency.getSelectedItem();
+            double amount = Double.parseDouble(amountField.getText());
+
+            double rate = getExchangeRate(from, to);
+            double result = amount * rate;
+
+            resultField.setText(String.format("%.2f %s", result, to));
+        } catch (NumberFormatException ex) {
+            resultField.setText("Invalid Input");
+        }
+    }
+
+    // Static exchange rates
+    private double getExchangeRate(String from, String to) {
+        // Sample rates for demonstration
+        double[][] rates = {
+                {1.0, 0.85, 83.0, 0.75, 110.0},  // From USD
+                {1.18, 1.0, 97.5, 0.88, 129.4},  // From EUR
+                {0.012, 0.010, 1.0, 0.0089, 1.33},  // From INR
+                {1.34, 1.14, 112.5, 1.0, 146.9},  // From GBP
+                {0.0091, 0.0077, 0.75, 0.0068, 1.0}  // From JPY
+        };
+
+        int fromIndex = getCurrencyIndex(from);
+        int toIndex = getCurrencyIndex(to);
+
+        return rates[fromIndex][toIndex];
+    }
+
+    private int getCurrencyIndex(String currency) {
+        switch (currency) {
+            case "USD": return 0;
+            case "EUR": return 1;
+            case "INR": return 2;
+            case "GBP": return 3;
+            case "JPY": return 4;
+            default: throw new IllegalArgumentException("Invalid currency");
+        }
+    }
+
+    public static void main(String[] args) {
+        new CurrencyConverterAWT();
+    }
+}
